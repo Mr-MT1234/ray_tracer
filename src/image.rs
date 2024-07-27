@@ -1,4 +1,5 @@
-use std::ops::{Index, IndexMut, Mul};
+use std::ops::{Index, IndexMut};
+use crate::math::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Color {
@@ -16,28 +17,12 @@ impl Color {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Colorf {
-    pub r: f32,
-    pub g: f32,
-    pub b: f32,
-}
-
-impl Colorf {
-    pub const BLACK : Colorf = Colorf {r:0., g:0., b:0.};
-    pub const WHITE : Colorf = Colorf {r:1., g:1., b:1.};
-
-    pub fn new(r: f32,g: f32,b: f32) -> Colorf{
-        Colorf {r,g,b}
-    }
-}
-
-impl Into<Color> for Colorf {
+impl Into<Color> for Vec3f {
     fn into(self) -> Color {
         Color {
-            r: (self.r * 255.) as u8,
-            g: (self.g * 255.) as u8,
-            b: (self.b * 255.) as u8,
+            r: (self.x * 255.) as u8,
+            g: (self.y * 255.) as u8,
+            b: (self.z * 255.) as u8,
             a: 255,
         }
     }
@@ -45,9 +30,9 @@ impl Into<Color> for Colorf {
 
 #[derive(Debug, Clone)]
 pub struct Image {
-    pixels : Vec<Color>,
-    width  : u16,
-    height : u16
+    pub pixels : Vec<Color>,
+    pub width  : u16,
+    pub height : u16
 }
 
 
@@ -90,5 +75,4 @@ impl IndexMut<[usize;2]> for Image {
 
 #[cfg(test)]
 mod test {
-    use super::*;
 }

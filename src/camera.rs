@@ -1,6 +1,5 @@
 use crate::math::*;
 use crate::ray::Ray;
-use crate::image::Colorf;
 
 #[derive(Debug, Clone)]
 pub struct Camera {
@@ -58,17 +57,16 @@ impl<'a> Iterator for RayIterator<'a> {
         let right = self.camera.direction.cross(&self.camera.up);
         let up  = right.cross(&self.camera.direction);
 
-        let relative_x = ((self.current_pixel_i as f32 + 0.5) / self.width as f32  - 0.5) * self.tan_fov;
-        let relative_y = ((self.current_pixel_j as f32 + 0.5) / self.height as f32 - 0.5) * self.tan_fov * self.aspect_ratio;
+        let relative_x = ((self.current_pixel_j as f32 + 0.5) / self.width as f32  - 0.5) * self.tan_fov;
+        let relative_y = (-(self.current_pixel_i as f32 + 0.5) / self.height as f32 + 0.5) * self.tan_fov * self.aspect_ratio;
 
         let pixel_in_plane = relative_x * right + relative_y * up;
-        let direction = (self.camera.direction + pixel_in_plane).normalize();
+        let direction = self.camera.direction + pixel_in_plane;
 
         self.current_ray_index += 1;
 
         Some((
             Ray {
-                color: Colorf::WHITE,
                 origin: self.camera.origin,
                 direction
             }, 
