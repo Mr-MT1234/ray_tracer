@@ -68,7 +68,7 @@ impl<'a> Iterator for RayIterator<'a> {
         Some((
             Ray {
                 origin: self.camera.origin,
-                direction
+                direction,
             }, 
             [self.current_pixel_i,self.current_pixel_j]
         ))

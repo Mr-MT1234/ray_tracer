@@ -6,6 +6,8 @@ mod math;
 mod ray_tracer;
 mod hitable;
 mod shapes;
+mod material;
+mod render_target;
 
 pub use image::*;
 pub use ray_tracer::*;
@@ -14,3 +16,5 @@ pub use math::*;
 pub use scene::*;
 pub use hitable::*;
 pub use shapes::*;
+pub use render_target::*;
+pub use material::*;

@@ -11,3 +11,4 @@ debug = 1
 
 [dependencies]
 nalgebra = "0.33.0"
+rand = "0.8.5"

@@ -1,11 +1,11 @@
-use crate::{math::*, ray::Ray};
+use crate::{material::Material, math::*, ray::Ray};
 
 
-#[derive(Debug, Clone, Copy)]
-pub struct HitInfo {
+#[derive(Clone, Copy)]
+pub struct HitInfo<'a> {
     pub point: Vec3f,
     pub normal: Vec3f,
-    pub color: Vec3f,
+    pub material: &'a dyn Material,
     pub t :f32
 }
 

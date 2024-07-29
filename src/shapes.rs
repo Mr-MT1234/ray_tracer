@@ -1,12 +1,14 @@
 use crate::hitable::{Hitable,HitInfo};
+use crate::material::Material;
 use crate::math::*;
 use crate::ray::Ray;
 
 
 pub struct Sphere {
     pub centre: Vec3f,
-    pub color: Vec3f,
     pub radius: f32,
+
+    pub material: Box<dyn Material>,
 }
 
 impl Hitable for Sphere {
@@ -34,7 +36,7 @@ impl Hitable for Sphere {
             return Some(HitInfo{
                 point,
                 normal,
-                color: self.color,
+                material: self.material.as_ref(),
                 t: t1
             });
         }
@@ -44,7 +46,7 @@ impl Hitable for Sphere {
             return Some(HitInfo{
                 point,
                 normal,
-                color: self.color,
+                material: self.material.as_ref(),
                 t: t2
             });
         }
