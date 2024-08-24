@@ -4,40 +4,38 @@ use crate::{Image, Vec3f};
 
 pub struct RenderTarget {
     image: Image,
-    iteration_count: u32,
+    accumulation_count: u32,
 }
 
 impl RenderTarget {
     pub fn new(width: u16, height: u16) -> RenderTarget {
         RenderTarget {
             image: Image::new(Vec3f::zeros(), width, height),
-            iteration_count: 0,
+            accumulation_count: 0,
         }
     }
 
     pub fn accumulate(&mut self, color: &Vec3f, pixel: [usize;2]) {
         self.image[pixel] += color;
-    }
-
-    pub fn get_iterations(&self) -> u32 {
-        self.iteration_count
+        self.accumulation_count += 1;
     }
 
     pub fn get_result(&self,  pixel: [usize;2]) -> Vec3f {
-        self.image[pixel] / self.iteration_count as f32
-    }
-
-    pub fn next_iteration(&mut self) {
-        self.iteration_count += 1;
+        let pixel_count = self.image.get_pixels().len() as f32;
+        self.image[pixel] / (self.accumulation_count as f32 / pixel_count)
     }
 
     pub fn clear(&mut self) {
         self.image.fill(Vec3f::zeros());
-        self.iteration_count = 0;
+        self.accumulation_count = 0;
     }
 
     pub fn get_size(&self) -> (u16,u16) {
         self.image.get_size()
+    }
+
+    pub fn get_image_mut(&mut self) -> &mut Image {
+        &mut self.image
     }
 }
 
@@ -53,3 +51,4 @@ impl IndexMut<[usize;2]> for RenderTarget{
         &mut self.image[index] 
     }
 }
+
