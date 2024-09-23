@@ -7,8 +7,8 @@ use rt::{Vec3f, Vec2f, Mat4f, Object, UVec3f};
 
 #[show_image::main]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    const WIDTH: u16 = 700;
-    const HEIGHT: u16 = 400;
+    const WIDTH: u16 = 1500;
+    const HEIGHT: u16 = 900;
     
     // Create a window with default options and display the image.
     let window = create_window("image", WindowOptions {
@@ -26,14 +26,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     let cube_light = Object::new(
         cube_mesh,
-        rt::translate(&Vec3f::new(0.0,3.0,0.0)),
-        Box::new(rt::Lambertian{color:Vec3f::new(0.0,0.0,0.0), emission: Vec3f::new(10.0,10.,10.0)}),
+        rt::translate(&Vec3f::new(0.0,3.0,0.0))*rt::scale(0.1, 0.1, 0.1),
+        Box::new(rt::Lambertian{color:Vec3f::new(0.0,0.0,0.0), emission: Vec3f::new(100.0,100.,100.0)}),
     );
 
-    let monkey = Object::new(
+    let bunny = Object::new(
         rt::Mesh::load_obj("./examples/assets/bunny.obj").unwrap(),
         rt::translate(&Vec3f::new(2.0,-0.5,0.0))*
         rt::rotation(&UVec3f::new_normalize(Vec3f::y()), std::f32::consts::PI*16.0/12.0),
+        // Box::new(rt::Lambertian{color:Vec3f::new(0.2,0.4,0.7), emission: Vec3f::new(0.0,0.,0.0)}),
+        Box::new(rt::Dialectric{refraction_index:1.5}),
+    );
+
+    let monkey = Object::new(
+        rt::Mesh::load_obj("./examples/assets/monkey.obj").unwrap(),
+        rt::translate(&Vec3f::new(1.0,0.0,3.0))*
+        rt::rotation(&UVec3f::new_normalize(Vec3f::y()), std::f32::consts::PI*4.0/4.0),
         Box::new(rt::Lambertian{color:Vec3f::new(0.2,0.4,0.7), emission: Vec3f::new(0.0,0.,0.0)}),
     );
 
@@ -50,11 +58,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             &[[0,1,2], [2,3,0]]
         ),
         rt::Mat4f::identity(),
-        Box::new(rt::Lambertian{color:Vec3f::new(1.0,1.0,1.0), emission:Vec3f::zeros()}),
+        Box::new(rt::Lambertian{color:Vec3f::new(0.8,0.8,0.8), emission:Vec3f::zeros()}),
     );
     
     scene.add_object(monkey);
-    scene.add_object(cube_light);
+    scene.add_object(bunny);
+    // scene.add_object(cube_light);
     scene.add_object(ground);
     
     let mut r_image = rt::RenderTarget::new(WIDTH, HEIGHT);

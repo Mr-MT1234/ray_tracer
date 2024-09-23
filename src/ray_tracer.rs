@@ -53,7 +53,7 @@ impl RayTracer {
                 }
             )
         } else {
-            (Vec3f::new(0.0,0.0,0.0), report1)
+            (Vec3f::new(0.8,0.8,0.9), report1)
         }
     }
 }

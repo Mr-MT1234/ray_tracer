@@ -24,60 +24,6 @@ pub trait Collider {
     fn collide(&self, ray: &Ray, min_t: f32, max_t: f32) -> (Option<CollisionInfo>, CollisionReport);
 }
 
-pub struct Sphere {
-    pub centre: Vec3f,
-    pub radius: f32,
-}
-
-impl Collider for Sphere {
-    fn collide(&self, ray: &Ray, min_t: f32, max_t: f32) -> (Option<CollisionInfo>, CollisionReport) {
-        let Ray {direction, origin, ..} = ray;
-        let relative_origin = origin - self.centre;
-
-        let a = direction.dot(direction);
-        let b = 2.0*direction.dot(&relative_origin);
-        let c = relative_origin.dot(&relative_origin) - self.radius * self.radius;
-
-        let delta = b*b - 4.0*a*c;
-
-        if delta < 0.0 { return (None, CollisionReport::default()) }
-
-        let delta_sqrt = delta.sqrt();
-
-        let t1 = (-b - delta_sqrt) / (2.0*a);
-        let t2 = (-b + delta_sqrt) / (2.0*a);
-
-        
-        if min_t <= t1 && t1 <= max_t {
-            let point = origin + t1*direction;
-            let normal = (point - self.centre) / self.radius;
-            return (Some(CollisionInfo{
-                point,
-                normal,
-                t: t1,
-                inside: false,
-            }),
-            CollisionReport::default()
-            );
-        }
-        else if min_t <= t2 && t2 <= max_t {
-            let point = origin + t2*direction;
-            let normal = (point - self.centre) / self.radius;
-            return (Some(CollisionInfo{
-                point,
-                normal:-normal,
-                t: t2,
-                inside: true,
-            }),
-            CollisionReport::default()
-            );
-        }
-
-        (None,CollisionReport::default())
-    }
-}
-
-
 pub struct Triangle {
     pub origin: Vec3f,
     pub side1 : Vec3f,
@@ -120,61 +66,10 @@ impl Collider for Triangle {
                         point: ray.direction*t + ray.origin,
                         normal,
                         t,
-                        inside
+                        inside,
+                        uv: Vec2f::new(u,v)
                     }
                 ), 
-                CollisionReport::default()
-            )
-        }
-        else {
-            (None, CollisionReport::default())
-        }
-    }
-}
-
-pub struct Plate {
-    pub origin: Vec3f,
-    pub side1: Vec3f,
-    pub side2 : Vec3f,
-}
-
-impl Collider for Plate {
-    fn collide(&self, ray: &Ray, min_t: f32, max_t: f32) -> (Option<CollisionInfo>, CollisionReport) {
-        let origin = ray.origin - self.origin;
-        let direction = &ray.direction;
-        let n = self.side1.cross(&self.side2);
-        let det = direction.dot(&n);
-
-        if det.abs() < 1e-4 {
-            return (None, CollisionReport {aabb_tests:0, triangle_tests: 1});
-        }
-        
-        // v =  (E1,O-A,D)  / (D,E1,E2)
-        // u = -(E2,O-A,D)  / (D,E1,E2)
-        // t = -(O-A,E1,E2) / (D,E1,E2)
-        //where (A,B,C) is the determinant of the matrix with columns A,B and C.
-
-        let od = origin.cross(&direction);
-        let invdet = 1.0/det;
-        let t = -origin.dot(&n) * invdet;
-        let u = -self.side2.dot(&od) * invdet;
-        let v = self.side1.dot(&od) * invdet;
-        
-
-        if t > min_t && t < max_t && u > -0.5 && v > -0.5
-                                  && u <  0.5 && v <  0.5 {
-            let inside = n.dot(&direction) > 0.0;
-            let normal = if inside {-n.normalize()} else {n.normalize()}; 
-            
-            (
-                    Some(
-                    CollisionInfo {
-                        point: ray.direction*t + ray.origin,
-                        normal,
-                        t,
-                        inside 
-                    }
-                ),
                 CollisionReport::default()
             )
         }
@@ -272,11 +167,14 @@ impl Collider for Mesh {
                 if let (Some(collision), _) = triangle.collide(ray, min_t, max_t) {
                     if collision.t < closest_dist && collision.t > min_t {
                         closest_dist = collision.t;
+                        let [u,v]:[f32;2] = collision.uv.into();
+                        let w = 1.0 - u - v;
                         closest_hit = Some(CollisionInfo {
                             point: collision.point,
                             normal: collision.normal,
                             t: collision.t,
-                            inside: collision.inside
+                            inside: collision.inside,
+                            uv: w*self.vertices[i].uv_coord + u*self.vertices[j].uv_coord + v*self.vertices[k].uv_coord
                         });
 
                         max_t = collision.t;
