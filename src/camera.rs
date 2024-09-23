@@ -1,5 +1,5 @@
 use crate::math::*;
-use crate::ray::Ray;
+use crate::commun_types::Ray;
 use rand::Rng;
 
 #[derive(Debug, Clone, Copy)]

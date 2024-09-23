@@ -1,15 +1,14 @@
 mod image;
 mod camera;
 mod scene;
-mod ray;
+mod commun_types;
 mod math;
 mod ray_tracer;
 mod hitables;
 mod material;
 mod render_target;
 mod colliders;
-mod BVH;
-mod processed_scene;
+mod bvhs;
 
 pub use image::*;
 pub use ray_tracer::*;
@@ -17,7 +16,7 @@ pub use camera::*;
 pub use math::*;
 pub use scene::*;
 pub use hitables::*;
-pub use ray::*;
+pub use commun_types::*;
 pub use render_target::*;
 pub use material::*;
 pub use colliders::*;
