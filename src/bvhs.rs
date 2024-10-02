@@ -140,7 +140,7 @@ impl BVH {
     }
 
     fn find_best_separation(vertices: &[Vertex], triangles: &[[usize;3]], centroids: &[Vec3f]) -> (usize, f32) {
-        const BIN_COUNT: usize = 16;
+        const BIN_COUNT: usize = 100;
         
         let mut best_cost = f32::INFINITY;
         let mut best_dimension = 0;
@@ -185,7 +185,6 @@ impl BVH {
         pivot
     }
 
-
     fn devide(nodes: &mut Vec<BVHNode>, node_index: usize, vertices: &[Vertex], triangles: &mut [[usize;3]], centroids: &mut [Vec3f]) {
         let node = nodes[node_index];
 
@@ -229,7 +228,6 @@ impl BVH {
         }
     }
 
-    
     pub fn build(vertices: &[Vertex], triangles: &mut [[usize;3]]) -> BVH {
         
         let mut centroids: Vec<_> = triangles.iter()
@@ -257,7 +255,6 @@ impl BVH {
             nodes
         };
 
-        println!("BVH depth is: {}", bvh.depth());
         bvh
     }
 
@@ -281,6 +278,34 @@ impl BVH {
         }
 
         depth_of_node(&self.nodes, 0)
+    }
+
+    pub fn max_triangle_count(&self) -> u32 {
+        self.nodes.iter().map(|node| {
+            match node.content {
+                NodeContent::Children(_) => 0,
+                NodeContent::Triangles((start, end)) => (end - start) as u32
+            }
+        }).max()
+        .unwrap()
+    }
+
+    pub fn avg_triangle_count(&self) -> f32 {
+        let triangle_count : f32 = self.nodes.iter().map(|node| {
+            match node.content {
+                NodeContent::Children(_) => 0.0,
+                NodeContent::Triangles((start, end)) => (end - start) as f32
+            }
+        }).sum();
+
+        let leaf_count : f32 = self.nodes.iter().map(|node| {
+            match node.content {
+                NodeContent::Children(_) => 0.0,
+                NodeContent::Triangles(_) => 1.0
+            }
+        }).sum();
+
+        triangle_count / leaf_count
     }
 
     pub fn get_nodes(&self) -> &Vec<BVHNode> {

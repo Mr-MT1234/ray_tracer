@@ -18,11 +18,11 @@ pub trait Optical {
 
 #[derive(Debug)]
 pub struct Object {
-    mesh: Mesh,
+    pub mesh: Mesh,
     transform: Mat4f,
     inv_transform: Mat4f,
     normal_mat: Mat3f,
-    material: Box<dyn Material>,
+    pub material: Box<dyn Material>,
 }
 
 impl Object {
@@ -41,6 +41,23 @@ impl Object {
             inv_transform,
             normal_mat,
         }
+    }
+
+    pub fn get_transform(&self) -> &Mat4f {
+        &self.transform
+    }
+
+    pub fn set_transform(&mut self, new_transform: Mat4f) {
+        let inv_transform = new_transform.try_inverse().unwrap();
+        let normal_mat = Mat3f::new(
+            inv_transform.m11,inv_transform.m21, inv_transform.m31,
+            inv_transform.m12,inv_transform.m22, inv_transform.m32,
+            inv_transform.m13,inv_transform.m23, inv_transform.m33
+        );
+
+        self.transform = new_transform;
+        self.inv_transform = inv_transform;
+        self.normal_mat = normal_mat;
     }
 }
 
