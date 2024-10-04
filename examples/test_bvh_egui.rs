@@ -183,7 +183,7 @@ impl eframe::App for MyApp {
 }
 impl MyApp {
     fn update_render_image(&mut self) {
-        let camera = rt::Camera::new(Vec3f::new(0.0,0.0,-8.0), Vec3f::z(), Vec3f::y(), 60.0 / 180. * f32::consts::PI);
+        let camera = rt::Camera::new(Vec3f::new(0.0,1.0,-8.0), Vec3f::z(), Vec3f::y(), 40.0 / 180. * f32::consts::PI);
         self.aabb_histogram.clear();
         self.triangles_histogram.clear();
         self.object.set_transform(rt::rotation(&UVec3f::new_normalize(Vec3f::y()), self.rotation));
