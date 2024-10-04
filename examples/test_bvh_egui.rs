@@ -193,11 +193,9 @@ impl MyApp {
             
             let color = get_color(&report, self.max_aabb, self.max_triangles);
             set_pixel(pixel, color, &mut self.image_data, self.width as usize);
-            if let Some(_) = hit {
-                self.aabb_histogram.add_point(report.aabb_tests as u32);
-                self.triangles_histogram.add_point(report.triangle_tests as u32);
-            }
-        
+            
+            self.aabb_histogram.add_point(report.aabb_tests as u32);
+            self.triangles_histogram.add_point(report.triangle_tests as u32);
         }
     }
 }

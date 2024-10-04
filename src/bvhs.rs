@@ -258,12 +258,16 @@ impl BVH {
         bvh
     }
 
-    pub fn intersects(&self, ray: &Ray) -> BVHIterator {
+    pub fn intersects(&self, ray: &Ray, min_t: f32, max_t: f32) -> BVHIterator {
+
+        let root = self.get_root();
+        let head = (root.aabb.intersects(ray, min_t, max_t).is_some() as isize) - 1;
+        
         BVHIterator {
             bvh: &self,
             stack: [0;BVH::MAX_DEPTH],
             ray: *ray,
-            head: 0
+            head
         }
 
     }
@@ -311,6 +315,10 @@ impl BVH {
     pub fn get_nodes(&self) -> &Vec<BVHNode> {
         &self.nodes
     }
+
+    pub fn get_root(&self) -> &BVHNode {
+        &self.nodes[0]
+    }
 }
 
 pub struct BVHIterator<'a> {
@@ -322,26 +330,44 @@ pub struct BVHIterator<'a> {
 
 impl<'a> BVHIterator<'a> {
     pub fn next(&mut self, min_t: f32, max_t: f32) -> (usize, usize, u64) {
-        // dbg!(self.head);
         let mut aabb_tests = 0;
+
         while self.head >= 0 {
             let node = &self.bvh.nodes[self.stack[self.head as usize]];
             self.head -= 1;
-            aabb_tests += 1;
-            if let Some(_) = node.aabb.intersects(&self.ray, min_t, max_t) {
-                match node.content {
-                    NodeContent::Children((left, right)) => {
-                        self.stack[(self.head  + 1) as usize] = left;
-                        self.stack[(self.head  + 2) as usize] = right;
-                        self.head += 2;
+            match node.content {
+                NodeContent::Children((left, right)) => {
+                    let left_itersection = self.bvh.nodes[left].aabb.intersects(&self.ray, min_t, max_t);
+                    let right_itersection = self.bvh.nodes[right].aabb.intersects(&self.ray, min_t, max_t);
+
+                    aabb_tests += 2;
+
+                    if left_itersection == None && right_itersection == None {
+                        continue;
                     }
-                    NodeContent::Triangles((begin,end)) => {
-                        return (begin,end, aabb_tests);
+                    else if let (Some(t1), Some(t2)) = (left_itersection, right_itersection) {
+                        if t1 < t2 {
+                            self.stack[self.head as usize + 1] = right;
+                            self.stack[self.head as usize + 2] = left;
+                        }
+                        else {
+                            self.stack[self.head as usize + 1] = left;
+                            self.stack[self.head as usize + 2] = right;
+                        }
+                        self.head += 2
+                    }
+                    else if let Some(_) = left_itersection {
+                        self.head += 1;
+                        self.stack[self.head as usize] = left;
+                    }
+                    else if let Some(_) = right_itersection {
+                        self.head += 1;
+                        self.stack[self.head as usize] = right;
                     }
                 }
+                NodeContent::Triangles((start, end)) => return (start, end, aabb_tests),
             }
-        };
-
+        }
         (0,0,aabb_tests)
     }
 }

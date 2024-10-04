@@ -149,7 +149,7 @@ impl Collider for Mesh {
         let mut closest_dist = max_t;
         let mut closest_hit = None;
 
-        let mut triangle_iter = self.bvh.intersects(ray);
+        let mut triangle_iter = self.bvh.intersects(ray, min_t, max_t);
         let mut report = CollisionReport::default();
 
         let (mut begin, mut end, mut aabb_tests) = triangle_iter.next(min_t, max_t);
