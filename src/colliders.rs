@@ -111,7 +111,7 @@ impl Mesh {
             Err(tobj::LoadError::InvalidLoadOptionConfig)
         }
         else {
-            let tobj::Mesh {positions, indices,texcoords, ..} = &models[0].mesh;
+            let tobj::Mesh {positions, indices,texcoords, normals,..} = &models[0].mesh;
             assert!(positions.len() % 3 == 0, "Position array's length is a not multiple of 3");
             assert!(indices  .len() % 3 == 0, "Position array's length is a not multiple of 3");
             assert!(texcoords.len() % 2 == 0, "Position array's length is a not multiple of 2");
@@ -123,7 +123,9 @@ impl Mesh {
             let uvs_iter = (0..texcoords.len() / 2).map(|i| (2*i,2*i+1))
                                                        .map(|(i,j)| (texcoords[i], texcoords[j]))
                                                        .map(|(u,v)| Vec2f::new(u,v));
-            let normals_iter = (0..positions.len() / 3).map(|_| Vec3f::zeros());
+            let normals_iter = (0..normals.len() / 3).map(|i| (3*i,3*i+1,3*i+2))
+                                                       .map(|(i,j,k)| (normals[i], normals[j], normals[k]))
+                                                       .map(|(x,y,z)| Vec3f::new(x,y,z));
 
             let vertices: Vec<_> = positions_iter.zip(normals_iter).zip(uvs_iter)
                                     .map(|((position, normal), uv_coord)| Vertex {position, normal, uv_coord})
@@ -169,12 +171,16 @@ impl Collider for Mesh {
                         closest_dist = collision.t;
                         let [u,v]:[f32;2] = collision.uv.into();
                         let w = 1.0 - u - v;
+
+                        let uv = w*self.vertices[i].uv_coord + u*self.vertices[j].uv_coord + v*self.vertices[k].uv_coord;
+                        let mut normal = (w*self.vertices[i].normal + u*self.vertices[j].normal + v*self.vertices[k].normal).normalize();
+                        if collision.inside {normal = -normal;}
                         closest_hit = Some(CollisionInfo {
                             point: collision.point,
-                            normal: collision.normal,
                             t: collision.t,
                             inside: collision.inside,
-                            uv: w*self.vertices[i].uv_coord + u*self.vertices[j].uv_coord + v*self.vertices[k].uv_coord
+                            normal,
+                            uv: collision.uv
                         });
 
                         max_t = collision.t;

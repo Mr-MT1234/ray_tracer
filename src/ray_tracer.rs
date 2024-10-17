@@ -47,13 +47,15 @@ impl RayTracer {
             let (scatered, report2) = self.trace(&new_ray, scene, depth + 1);
             (
                 mul_element_wise(scatered, attenuation) + emission,
+                // info.normal,
                 CollisionReport {
                     aabb_tests: report1.aabb_tests + report2.aabb_tests,
                     triangle_tests: report1.triangle_tests + report2.triangle_tests
                 }
             )
         } else {
-            (Vec3f::new(0.8,0.8,0.9), report1)
+            (Vec3f::new(0.1,0.1,0.1), report1)
+            // (Vec3f::new(0.9,0.9,1.0), report1)
         }
     }
 }

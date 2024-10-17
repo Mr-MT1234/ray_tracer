@@ -69,8 +69,8 @@ impl AABB {
     }
 
     pub fn pad(mut self) -> Self {
-        self.max += Vec3f::new(f32::EPSILON,f32::EPSILON,f32::EPSILON);
-        self.min -= Vec3f::new(f32::EPSILON,f32::EPSILON,f32::EPSILON);
+        self.max += 5.0*Vec3f::new(f32::EPSILON,f32::EPSILON,f32::EPSILON);
+        self.min -= 5.0*Vec3f::new(f32::EPSILON,f32::EPSILON,f32::EPSILON);
         self
     }
 

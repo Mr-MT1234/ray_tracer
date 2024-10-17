@@ -7,8 +7,8 @@ use rt::{Vec3f, Vec2f, Mat4f, Object, UVec3f};
 
 #[show_image::main]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    const WIDTH: u16 = 1500;
-    const HEIGHT: u16 = 900;
+    const WIDTH: u16 = 2000;
+    const HEIGHT: u16 = 1500;
     
     // Create a window with default options and display the image.
     let window = create_window("image", WindowOptions {
@@ -26,15 +26,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     let cube_light = Object::new(
         cube_mesh,
-        rt::translate(&Vec3f::new(0.0,3.0,0.0))*rt::scale(0.1, 0.1, 0.1),
-        Box::new(rt::Lambertian{color:Vec3f::new(0.0,0.0,0.0), emission: Vec3f::new(100.0,100.,100.0)}),
+        rt::translate(&Vec3f::new(0.0,3.0,0.0))*rt::scale(1.0, 1.0, 1.0),
+        Box::new(rt::Lambertian{color:Vec3f::new(0.0,0.0,0.0), emission: Vec3f::new(10.0,10.,10.0)}),
     );
 
     let bunny = Object::new(
-        rt::Mesh::load_obj("./examples/assets/bunny.obj").unwrap(),
-        rt::translate(&Vec3f::new(2.0,-0.5,0.0))*
-        rt::rotation(&UVec3f::new_normalize(Vec3f::y()), std::f32::consts::PI*16.0/12.0),
-        // Box::new(rt::Lambertian{color:Vec3f::new(0.2,0.4,0.7), emission: Vec3f::new(0.0,0.,0.0)}),
+        rt::Mesh::load_obj("./examples/assets/sphere.obj").unwrap(),
+        rt::translate(&Vec3f::new(2.0,0.0,0.0)),
+        // Box::new(rt::Lambertian{color:Vec3f::new(0.8,0.4,0.2), emission: Vec3f::new(0.0,0.,0.0)}),
         Box::new(rt::Dialectric{refraction_index:1.5}),
     );
 
@@ -50,10 +49,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let ground = Object::new(
         rt::Mesh::new(
         &[
-            rt::Vertex { position: Vec3f::new( 1000.0,-1.0,-1000.0), normal: Vec3f::y(), uv_coord: Vec2f::zeros() },
-            rt::Vertex { position: Vec3f::new( 1000.0,-1.0, 1000.0), normal: Vec3f::y(), uv_coord: Vec2f::zeros() },
-            rt::Vertex { position: Vec3f::new(-1000.0,-1.0, 1000.0), normal: Vec3f::y(), uv_coord: Vec2f::zeros() },
-            rt::Vertex { position: Vec3f::new(-1000.0,-1.0,-1000.0), normal: Vec3f::y(), uv_coord: Vec2f::zeros() },
+            rt::Vertex { position: Vec3f::new( 1000.0,-1.0,-1000.0), normal: -Vec3f::y(), uv_coord: Vec2f::zeros() },
+            rt::Vertex { position: Vec3f::new( 1000.0,-1.0, 1000.0), normal: -Vec3f::y(), uv_coord: Vec2f::zeros() },
+            rt::Vertex { position: Vec3f::new(-1000.0,-1.0, 1000.0), normal: -Vec3f::y(), uv_coord: Vec2f::zeros() },
+            rt::Vertex { position: Vec3f::new(-1000.0,-1.0,-1000.0), normal: -Vec3f::y(), uv_coord: Vec2f::zeros() },
             ],
             &[[0,1,2], [2,3,0]]
         ),
@@ -63,16 +62,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     scene.add_object(monkey);
     scene.add_object(bunny);
-    // scene.add_object(cube_light);
+    scene.add_object(cube_light);
     scene.add_object(ground);
     
     let mut r_image = rt::RenderTarget::new(WIDTH, HEIGHT);
     
     loop {
-        let report = renderer.accumulate(&scene, &camera, &mut r_image);
+        let _ = renderer.accumulate(&scene, &camera, &mut r_image);
         copy_result(&r_image, &mut data);
         let window_image = ImageView::new(ImageInfo::rgb8(WIDTH as u32, HEIGHT as u32), &data);
-        dbg!(report);
         
         window.set_image("image-001", window_image)?;
     }

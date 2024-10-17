@@ -44,9 +44,9 @@ pub fn rotation(axis: &UVec3f, angle: f32) -> Mat4f {
 
 #[inline] 
 pub fn translate(translation: &Vec3f) -> Mat4f {
-    let mut I = Mat4f::identity();
-    I.set_column(3, &vec3_to_vec4(translation, 1.0));
-    I
+    let mut identity = Mat4f::identity();
+    identity.set_column(3, &vec3_to_vec4(translation, 1.0));
+    identity
 }
 
 #[inline] 

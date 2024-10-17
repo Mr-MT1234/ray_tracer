@@ -7,6 +7,7 @@ use crate::{material::Material, math::*, commun_types::Ray, colliders::*};
 pub struct HitInfo<'a> {
     pub point: Vec3f,
     pub normal: Vec3f,
+    pub uv: Vec2f,
     pub material: &'a dyn Material,
     pub t :f32,
     pub inside: bool,
@@ -71,10 +72,11 @@ impl Optical for Object {
         
         let collision = collision.map(|info| HitInfo {
             point: (self.transform * vec3_to_vec4(&info.point,1.0)).xyz(),
-            normal: self.normal_mat * info.normal,
+            normal: (self.normal_mat * info.normal).normalize(),
             material: self.material.as_ref(),
             t: info.t,
             inside: info.inside,
+            uv: info.uv
         });
 
         (collision, report)

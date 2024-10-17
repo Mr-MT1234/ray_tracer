@@ -40,7 +40,7 @@ impl Material for Dialectric {
     fn scater(&self,mut  in_direction: Vec3f, hit_info: &HitInfo) -> ScaterInfo {
 
         let n = if hit_info.inside {1.0/self.refraction_index} else {self.refraction_index};
-        let normal = hit_info.normal;
+        let normal = &hit_info.normal;
         in_direction = in_direction.normalize();
 
         let cos = -in_direction.dot(&normal);
@@ -48,7 +48,7 @@ impl Material for Dialectric {
         let out_tangential = (in_direction + cos * normal) / n;
         let a = 1.0 - out_tangential.norm_squared();
 
-        let direction = if a < 0.0  || Dialectric::reflectance(cos,n) > rand::random() {
+        let direction = if  a < 0.0 || Dialectric::reflectance(cos,n) > rand::random() {
             reflect(&in_direction, &normal)
         }
         else {
