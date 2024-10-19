@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     })?;
     let mut data: Vec<_> = (0..WIDTH as usize * HEIGHT as usize * 3).map(|_| 0u8).collect();
     
-    let camera = rt::Camera::new(Vec3f::new(0.0,0.0,-2.0), Vec3f::z(), Vec3f::y(), 60.0 / 180. * f32::consts::PI);
+    let camera = rt::Camera::new(Vec3f::new(0.0,0.0,-3.0), Vec3f::z(), Vec3f::y(), 45.0 / 180. * f32::consts::PI);
     let renderer = rt::RayTracer::new();
     
     

@@ -1,4 +1,6 @@
+use std::io::Cursor;
 use std::ops::{Index, IndexMut};
+use std::path::Path;
 
 use crate::{Image, Vec3f};
 
@@ -36,6 +38,18 @@ impl RenderTarget {
 
     pub fn get_image_mut(&mut self) -> &mut Image {
         &mut self.image
+    }
+
+    pub fn save(&self, path: impl AsRef<Path>) -> image::ImageResult<()> {
+        let pixel_count = self.image.get_pixels().len() as f32;
+        let bytes: Vec<u8> = self.image.pixels.iter().map(|vec| vec.iter())
+                                                     .flatten()
+                                                     .map(|x| (x / (self.accumulation_count as f32 / pixel_count) * 255.0) as u8)
+                                                     .collect();
+
+        image::save_buffer(path, &bytes, self.image.width as u32, self.image.height as u32, image::ColorType::Rgb8)?;
+
+        Ok(())
     }
 }
 
