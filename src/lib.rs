@@ -6,7 +6,6 @@ mod math;
 mod ray_tracer;
 mod hitables;
 mod material;
-mod render_target;
 mod colliders;
 mod bvhs;
 
@@ -17,6 +16,5 @@ pub use math::*;
 pub use scene::*;
 pub use hitables::*;
 pub use commun_types::*;
-pub use render_target::*;
 pub use material::*;
 pub use colliders::*;

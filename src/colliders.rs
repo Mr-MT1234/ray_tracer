@@ -4,6 +4,7 @@ use crate::bvhs::BVH;
 use crate::Vertex;
 use std::ffi::OsStr;
 use std::path::Path;
+use serde::{Serialize, Deserialize};
 
 pub struct CollisionInfo {
     pub point : Vec3f,
@@ -79,7 +80,8 @@ impl Collider for Triangle {
     }
 }
 
-#[derive(Debug, Clone)]
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Mesh {
     pub vertices: Vec<Vertex>,
     pub triangles: Vec<[usize;3]>,

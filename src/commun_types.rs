@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::math::*;
 
 #[derive(Debug, Clone, Copy)]
@@ -5,7 +7,7 @@ pub struct Ray {
     pub origin : Vec3f,
     pub direction : Vec3f,
 }
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Vertex {
     pub position: Vec3f,
     pub normal: Vec3f,

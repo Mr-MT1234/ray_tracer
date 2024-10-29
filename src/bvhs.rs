@@ -1,9 +1,10 @@
 use core::f32;
 use std::usize;
+use serde::{Serialize, Deserialize};
 
 use crate::{math::*, commun_types::*};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct AABB {
     pub min: Vec3f,
     pub max: Vec3f
@@ -88,19 +89,19 @@ impl AABB {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum NodeContent {
     Children((usize, usize)),
     Triangles((usize, usize)),
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct BVHNode {
     pub aabb: AABB,
     pub content: NodeContent,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BVH {
     nodes: Vec<BVHNode>,
 }
