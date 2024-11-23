@@ -91,7 +91,7 @@ impl Material for Metal {
         let ray = Ray {direction, origin: hit_info.point};
         ScaterInfo {
             ray, 
-            attenuation: Vec3f::new(1.0,1.0,1.0),
+            attenuation: self.color,
             emission: Vec3f::zeros(),
         }    
     }

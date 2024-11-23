@@ -40,7 +40,7 @@ impl RayTracer {
 
         let mut current_sample_index = 0;
         let total_sample_count = resolution.0*resolution.1*options.rays_per_pixel;
-        let hundredth_of_persantile = total_sample_count / 1000;
+        let hundredth_of_persantile = total_sample_count / 100000;
 
         for (ray, pixel) in Self::shoot_at(camera.clone(), resolution, options.rays_per_pixel) {
             

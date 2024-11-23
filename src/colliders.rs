@@ -114,9 +114,10 @@ impl Mesh {
         }
         else {
             let tobj::Mesh {positions, indices,texcoords, normals,..} = &models[0].mesh;
-            assert!(positions.len() % 3 == 0, "Position array's length is a not multiple of 3");
-            assert!(indices  .len() % 3 == 0, "Position array's length is a not multiple of 3");
-            assert!(texcoords.len() % 2 == 0, "Position array's length is a not multiple of 2");
+            assert!(positions.len() % 3 == 0, "Position array's length is a not multiple of 3({})", positions.len());
+            assert!(normals.len() % 3 == 0, "Normal array's length is a not multiple of 3({})", normals.len());
+            assert!(texcoords.len() % 2 == 0, "TexCoords array's length is a not multiple of 2({})", texcoords.len());
+            assert!(indices  .len() % 3 == 0, "Indices array's length is a not multi ple of 3({})", indices  .len());
             
             let positions_iter = (0..positions.len() / 3).map(|i| (3*i,3*i+1,3*i+2))
                                                             .map(|(i,j,k)| (positions[i], positions[j], positions[k]))
