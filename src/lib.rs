@@ -8,6 +8,7 @@ mod hitables;
 mod material;
 mod colliders;
 mod bvhs;
+mod parallel;
 
 pub use image::*;
 pub use ray_tracer::*;

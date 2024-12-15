@@ -340,20 +340,20 @@ impl<'a> BVHIterator<'a> {
                 NodeContent::Children((left, right)) => {
                     let left_itersection = self.bvh.nodes[left].aabb.intersects(&self.ray, min_t, max_t);
                     let right_itersection = self.bvh.nodes[right].aabb.intersects(&self.ray, min_t, max_t);
-
+                    
                     aabb_tests += 2;
-
+                    
                     if left_itersection == None && right_itersection == None {
                         continue;
                     }
                     else if let (Some(t1), Some(t2)) = (left_itersection, right_itersection) {
                         if t1 < t2 {
-                            self.stack[self.head as usize + 1] = right;
-                            self.stack[self.head as usize + 2] = left;
+                            self.stack[(self.head + 1)as usize] = right;
+                            self.stack[(self.head + 2)as usize] = left;
                         }
                         else {
-                            self.stack[self.head as usize + 1] = left;
-                            self.stack[self.head as usize + 2] = right;
+                            self.stack[(self.head + 1)as usize] = left;
+                            self.stack[(self.head + 2)as usize] = right;
                         }
                         self.head += 2
                     }

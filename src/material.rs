@@ -12,7 +12,7 @@ pub struct ScaterInfo {
 } 
 
 #[typetag::serde(tag="type")]
-pub trait Material : core::fmt::Debug {
+pub trait Material : core::fmt::Debug + Sync {
     fn scater(&self, in_direction: Vec3f, hit_info: &HitInfo) -> ScaterInfo;
 }
 

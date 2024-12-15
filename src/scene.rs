@@ -1,8 +1,9 @@
 use core::f32;
+use std::fmt::Debug;
 use std::io::{BufReader, Write};
 use std::path::Path;
 
-use crate::{hitables::*, vec3_to_vec4, Camera, Collider, CollisionReport, Mat3f, Mat4f, Material, Mesh};
+use crate::{hitables::*, vec3_to_vec4, Camera, Collider, CollisionReport, Mat3f, Mat4f, Material, Mesh, Vec3f};
 use crate::commun_types::Ray;
 use std::fs::File;
 use serde::{Serialize, Deserialize};
@@ -93,21 +94,64 @@ impl Into<MinimalObject> for Object {
     }
 }
 
+#[typetag::serde(tag="type")]
+pub trait Environment : Debug + Sync {
+    fn sample(&self, direction: &Vec3f) -> Vec3f;
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ConstantEnvironment {
+    pub color: Vec3f
+}
+
+#[typetag::serde]
+impl Environment for ConstantEnvironment {
+    fn sample(&self, _direction: &Vec3f) -> Vec3f {
+        self.color
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SkyEnvironment {
+    pub sun_direction: Vec3f,
+    pub sun_color: Vec3f,
+    pub up_color: Vec3f,
+    pub down_color: Vec3f,
+    pub sun_size: f32,
+}
+
+#[typetag::serde]
+impl Environment for SkyEnvironment {
+    fn sample(&self, direction: &Vec3f) -> Vec3f {
+        let v = -self.sun_direction.dot(&direction.normalize());
+        if v > 1. - self.sun_size {
+            self.sun_color
+        }
+        else {
+            let u = direction.y;
+            let color = u*self.up_color + (1.0 - u)*self.down_color;
+            color
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Scene {
     meshes: Vec<Mesh>,
     materials: Vec<Box<dyn Material>>,
     objects: Vec<Object>,
-    pub camera: Camera
+    pub camera: Camera,
+    pub environment: Box<dyn Environment>
 } 
 
 impl Scene {
-    pub fn new(camera: Camera) -> Scene {
+    pub fn new(camera: Camera, environment: Box<dyn Environment>) -> Scene {
         Scene { 
             objects: Vec::new(), 
             meshes: Vec::new(), 
             materials: Vec::new(), 
-            camera
+            camera,
+            environment
         }
     }
 
