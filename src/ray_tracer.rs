@@ -59,7 +59,8 @@ impl RayTracer {
             task
         });
 
-        let worker_count = thread::available_parallelism().map(|i| i.get()).unwrap_or(16);
+        // let worker_count = thread::available_parallelism().map(|i| i.get()).unwrap_or(16);
+        let worker_count = num_cpus::get();
         parallel::parallel_execute(tasks,worker_count);
 
         render_report
@@ -112,7 +113,9 @@ impl RayTracer {
         });
 
 
-        let worker_count = thread::available_parallelism().map(|i| i.get()).unwrap_or(16);
+        // let worker_count = thread::available_parallelism().map(|i| i.get()).unwrap_or(16);
+        let worker_count = num_cpus::get();
+        println!("Worker thread count: {worker_count}");
         parallel::parallel_execute(tasks,worker_count);
 
         render_report
