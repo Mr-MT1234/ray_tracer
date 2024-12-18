@@ -33,7 +33,6 @@ fn main() {
     let mirror_material = scene.add_material(Box::new(rt::Metal{color: Vec3f::new(0.9, 1.0, 0.9), roughness:0.0}));
     
     let plane_handle = scene.add_mesh(plane);
-    let sphere_handle = scene.add_mesh(rt::Mesh::load_obj("./examples/assets/sphere.obj").unwrap());
     let dragon_handle = scene.add_mesh(rt::Mesh::load_obj("./examples/assets/dragon.obj").unwrap());
     let bunny_handle = scene.add_mesh(rt::Mesh::load_obj("./examples/assets/bunny.obj").unwrap());
     let cube_handle = scene.add_mesh(rt::Mesh::load_obj("./examples/assets/cube.obj").unwrap());
