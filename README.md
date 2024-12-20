@@ -1,4 +1,4 @@
-# Ray tracer
+# Raylet
 A ray tracer for me to learn more about rendering and rust.
 
 ![Cornell box scene rendered with 1000 samples per pixel.](cornell_box_1000.png)
@@ -73,5 +73,7 @@ target.save("./render.png").expect("Failed to save render result");
 ## Examples
 
 Some examples provided in this reposotory might no longer work as they were created for an older version of the engin.
+
+![A render of a snow globe](christmas.png)
 
 
